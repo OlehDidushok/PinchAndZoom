@@ -14,12 +14,19 @@ struct ContentView: View {
     @State private var imageOffset: CGSize = .zero
     @State private var isDrawOpen: Bool = false
     
+    let pages: [Page] = pagesData
+    @State private var  pageIndex: Int = 1
+    
     // MARK: FUNCTION
     func resetImageState() {
         return withAnimation(.spring()) {
             imageScale = 1
             imageOffset = .zero
         }
+    }
+    
+    func currentPage() -> String {
+        return pages[pageIndex - 1].imageName
     }
     
     var body: some View {
@@ -29,7 +36,7 @@ struct ContentView: View {
                 Color.clear
                 
                 // MARK: PAGE IMAGE
-                Image("magazine-front-cover")
+                Image(currentPage())
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .cornerRadius(10)
@@ -161,6 +168,21 @@ struct ContentView: View {
                             }
                         }
                     // MARK: - DRAWER THUBNAILS
+                    
+                    ForEach(pages) { page in
+                        Image(page.thumbnailName)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 80)
+                            .shadow(radius: 4)
+                            .opacity(isDrawOpen ? 1 : 0)
+                            .animation(.easeOut(duration: 0.5), value: isDrawOpen)
+                            .onTapGesture(perform: {
+                                isAnimating = true
+                                pageIndex = page.id
+                            })
+                        
+                    }
                     Spacer()
                 } //: - DRAWER
                     .padding(EdgeInsets(top: 16, leading: 8, bottom: 16, trailing: 8))
